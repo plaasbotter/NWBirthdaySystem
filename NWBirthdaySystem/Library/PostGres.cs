@@ -238,23 +238,54 @@ namespace NWBirthdaySystem.Library
             }
         }
 
-        public void UpsertBirthday(Birthday tempBirthday)
+        public bool UpsertBirthday(Birthday tempBirthday)
         {
+            if (CheckIfEntryExists(tempBirthday) == false)
+            {
+                lock (_connectionLock)
+                {
+                    while (TestConnection() == false)
+                    {
+                        _logger.Warning("[{0}] [{1}]", "DatabaseContext.UpsertBirthday", "Reconnecting...");
+                    }
+
+                    string query = "INSERT INTO \"Birthdays\" (\"Name\", \"BirthDate\", \"ChatId\") VALUES (@Name, @BirthDate, @ChatId)";
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, _con))
+                    {
+                        cmd.Parameters.Add(new NpgsqlParameter("Name", tempBirthday.Name));
+                        cmd.Parameters.Add(new NpgsqlParameter("BirthDate", tempBirthday.BirthDate));
+                        cmd.Parameters.Add(new NpgsqlParameter("ChatId", tempBirthday.ChatId));
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private bool CheckIfEntryExists(Birthday tempBirthday)
+        {
+            bool returnValue = true;
             lock (_connectionLock)
             {
                 while (TestConnection() == false)
                 {
                     _logger.Warning("[{0}] [{1}]", "DatabaseContext.UpsertBirthday", "Reconnecting...");
                 }
-                string query = "INSERT INTO \"Birthdays\" (\"Name\", \"BirthDate\", \"ChatId\") VALUES (@Name, @BirthDate, @ChatId)";
+                string query = "SELECT COUNT(*) FROM \"Birthdays\" WHERE \"Name\" = @Name AND \"BirthDate\" = @BirthDate AND \"ChatId\" = @ChatId";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(query, _con))
                 {
                     cmd.Parameters.Add(new NpgsqlParameter("Name", tempBirthday.Name));
                     cmd.Parameters.Add(new NpgsqlParameter("BirthDate", tempBirthday.BirthDate));
                     cmd.Parameters.Add(new NpgsqlParameter("ChatId", tempBirthday.ChatId));
-                    cmd.ExecuteNonQuery();
+                    long dbCount = (long)cmd.ExecuteScalar();
+                    if (dbCount == 0)
+                    {
+                        returnValue = false;
+                    }
                 }
             }
+            return returnValue;
         }
     }
 }

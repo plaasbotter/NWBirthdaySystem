@@ -12,6 +12,6 @@ namespace NWBirthdaySystem.Library
         List<Birthday> GetBirthdays();
         long GetLastMessage();
         void UpsertMessage(BirthdayEntry tempBirthdayEntry);
-        void UpsertBirthday(Birthday tempBirthday);
+        bool UpsertBirthday(Birthday tempBirthday);
     }
 }

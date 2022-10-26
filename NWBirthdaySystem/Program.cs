@@ -98,8 +98,16 @@ namespace NWBirthdaySystem
                                         ChatId = message.message.from.id.ToString(),
                                         Name = splittedString[2]
                                     };
-                                    _databaseContext.UpsertBirthday(tempBirthday);
-                                    _messageContext.SendMessage($"Inserted birthday of {tempBirthday.Name}", senderId.ToString());
+                                    bool hasSent = _databaseContext.UpsertBirthday(tempBirthday);
+                                    if (hasSent == true)
+                                    {
+                                        _messageContext.SendMessage($"Inserted birthday of {tempBirthday.Name}", senderId.ToString());
+                                    }
+                                    else
+                                    {
+                                        _logger.Error("[{0}] [{1}]", "Could not insert person, likely duplicate", "Program.CheckMessages");
+                                        _messageContext.SendMessage($"Could not insert person {tempBirthday.Name}, likely duplicate", senderId.ToString());
+                                    }
                                 }
                                 catch (Exception err)
                                 {
