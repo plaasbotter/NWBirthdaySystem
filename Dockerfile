@@ -21,7 +21,4 @@ COPY --from=build /app/publish .
 # If config.nw is required at runtime, copy it
 COPY config.nw .
 
-# Set a non-root user if needed for security (optional)
-USER app
-
 ENTRYPOINT ["dotnet", "NWBirthdaySystem.dll"]
