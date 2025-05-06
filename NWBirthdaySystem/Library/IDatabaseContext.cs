@@ -9,7 +9,7 @@ namespace NWBirthdaySystem.Library
         bool TestConnection();
 
 
-        List<Birthday> GetBirthdays();
+        List<Birthday> GetBirthdays(DateTime date);
         long GetLastMessage();
         void UpsertMessage(BirthdayEntry tempBirthdayEntry);
         bool UpsertBirthday(Birthday tempBirthday);

@@ -11,4 +11,10 @@ namespace NWBirthdaySystem.Models
         public short BirthDate { get; set; }
         public string ChatId { get; set; } = "";
     }
+
+    internal class BirthdayShort
+    {
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

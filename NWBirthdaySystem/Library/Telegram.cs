@@ -28,6 +28,7 @@ namespace NWBirthdaySystem.Library
                     response.EnsureSuccessStatusCode();
                 }
                 success = true;
+                _logger.Information("sending message {0} {1}", text, chatId);
             }
             catch (Exception err)
             {

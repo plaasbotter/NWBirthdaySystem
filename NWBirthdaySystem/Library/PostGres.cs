@@ -188,7 +188,7 @@ namespace NWBirthdaySystem.Library
             return returnValue;
         }
 
-        public List<Birthday> GetBirthdays()
+        public List<Birthday> GetBirthdays(DateTime date)
         {
             List<Birthday> returnValue = new List<Birthday>();
             lock (_connectionLock)
@@ -197,8 +197,7 @@ namespace NWBirthdaySystem.Library
                 {
                     _logger.Warning("[{0}] [{1}]", "DatabaseContext.GetBirthdays", "Reconnecting...");
                 }
-                DateTime today = DateTime.Today;
-                short todayShort = (short)(today.Month * 32 + today.Day);
+                short todayShort = (short)(date.Month * 32 + date.Day);
                 string query = "SELECT \"Name\", \"ChatId\" FROM \"Birthdays\" WHERE \"BirthDate\" = @BirthDate";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(query, _con))
                 {
